@@ -1,39 +1,39 @@
 package com.example.composetest
 
+import android.database.sqlite.SQLiteDatabase.create
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.os.bundleOf
-import androidx.fragment.app.commit
-import com.example.composetest.ui.theme.ComposeTestTheme
+import com.example.composetest.network.reponses.RecipeService
+import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(R.layout.main_layout) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val service = Retrofit.Builder()
+            .baseUrl("https://food2fork.ca/api/recipe/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RecipeService::class.java)
 
-//        if (savedInstanceState == null) {
-//            supportFragmentManager
-//                .beginTransaction()
-//                .replace(R.id.mainContainer, FirstFragment())
-//                .commit()
-//        }
+        CoroutineScope(IO).launch{
+            val response = service.get(
+                token = "Token 9c8b06d329136da358c2d00e76946b0111ce2c48",
+                id = 583
+            )
 
+            Log.d("MainActivity", "response ${response.toString()}")
+        }
 
     }
 }
