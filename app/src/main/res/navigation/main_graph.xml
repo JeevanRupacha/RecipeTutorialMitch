@@ -2,18 +2,18 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_graph"
-    app:startDestination="@id/firstFragment">
+    app:startDestination="@id/recipeListFragment">
 
     <fragment
-        android:id="@+id/firstFragment"
-        android:name="com.example.composetest.FirstFragment"
+        android:id="@+id/recipeFragment"
+        android:name="com.example.composetest.presentation.ui.recipe.RecipeFragment"
         android:label="FirstFragment" >
         <action
             android:id="@+id/action_firstFragment_to_secondFragment"
-            app:destination="@id/secondFragment" />
+            app:destination="@id/recipeListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/secondFragment"
-        android:name="com.example.composetest.SecondFragment"
+        android:id="@+id/recipeListFragment"
+        android:name="com.example.composetest.presentation.ui.recipe_list.RecipeListFragment"
         android:label="SecondFragment" />
 </navigation>

@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android Projects/MitchRecipeApp/app/src/main/res/layout/first_fragment.xml" value="0.13043478260869565" />
+        <entry key="..\:/Android Projects/MitchRecipeApp/app/src/main/res/layout/main_layout.xml" value="0.13043478260869565" />
+        <entry key="..\:/Android Projects/MitchRecipeApp/app/src/main/res/layout/recipe_fragment.xml" value="0.1" />
+        <entry key="..\:/Android Projects/MitchRecipeApp/app/src/main/res/layout/recipe_list_fragment.xml" value="0.1" />
+        <entry key="..\:/Android Projects/MitchRecipeApp/app/src/main/res/layout/second_fragment.xml" value="0.13043478260869565" />
         <entry key="..\:/Android Projects/app/src/main/res/layout/first_fragment.xml" value="0.17391304347826086" />
         <entry key="..\:/Android Projects/app/src/main/res/layout/main_layout.xml" value="0.17391304347826086" />
         <entry key="..\:/Android Projects/app/src/main/res/layout/second_fragment.xml" value="0.17391304347826086" />
