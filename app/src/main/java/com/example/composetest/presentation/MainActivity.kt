@@ -15,8 +15,6 @@ class MainActivity : AppCompatActivity(R.layout.main_layout) {
         super.onCreate(savedInstanceState)
 
 
-
-
 //        val service = Retrofit.Builder()
 //            .baseUrl("https://food2fork.ca/api/recipe/")
 //            .addConverterFactory(GsonConverterFactory.create())

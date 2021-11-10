@@ -14,30 +14,33 @@ import javax.inject.Named
 
 @HiltViewModel
 class RecipeListViewModel @Inject constructor(
-        private val randomString: String,
         private val repository: RecipeRepository,
         @Named("auth_token") private val token: String
     ): ViewModel() {
 
     val recipes: MutableState<List<Recipe>> = mutableStateOf(listOf())
+    val query: MutableState<String> = mutableStateOf("")
 
     init{
-        searchRecipe()
+        searchRecipe("chicken")
     }
 
-    fun searchRecipe()
+    fun searchRecipe(query: String)
     {
         viewModelScope.launch {
             val result = repository.search(
                 token = token,
                 page = 1,
-                query = "chicken"
+                query = query
             )
             recipes.value = result
         }
     }
 
+    fun onQueryChange(query: String ){
+        this.query.value = query
+    }
+
     fun getRepo() = repository
-    fun getRandomString() = randomString
     fun getToken() = token
 }

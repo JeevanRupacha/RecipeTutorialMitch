@@ -10,8 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import com.example.composetest.R
 import com.example.composetest.domain.model.Recipe
 
@@ -36,16 +37,25 @@ fun RecipeCard(
 
     Column()
     {
-       recipe.featuredImage?.let { url ->
-           Image(
-               painter = painterResource(
-               id = R.drawable.recipe_default_image),
-               contentDescription = "Recipe Default Image ",
-               modifier = Modifier
-                   .fillMaxWidth(),
 
-               contentScale = ContentScale.Crop
+       recipe.featuredImage?.let { url ->
+
+
+           Image(
+               painter = rememberImagePainter(
+                   data = url,
+                   builder = {
+                       placeholder(R.drawable.recipe_default_image)
+                       crossfade(true)
+                   }
+               ),
+               contentDescription = null,
+               modifier = Modifier
+                   .fillMaxWidth()
+                   .height(300.dp),
+               contentScale = ContentScale.Crop,
            )
+
        }
 
         recipe.title?.let{ title ->
