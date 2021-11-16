@@ -6,11 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetest.domain.model.Recipe
+import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NewSearchEvent
+import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NextPageEvent
 import com.example.composetest.repository.RecipeRepository
 import com.example.composetest.util.FOOD_API_PAGE_SIZE
+import com.example.composetest.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -31,16 +35,33 @@ class RecipeListViewModel @Inject constructor(
     val isDarkTheme = mutableStateOf(false)
 
     init{ 
-        searchRecipe()
+        onTriggerEvent(NewSearchEvent)
     }
 
-    fun searchRecipe()
+    fun onTriggerEvent(event: RecipeListEvent)
+    {
+        viewModelScope.launch {
+            try {
+                when(event){
+                    is NewSearchEvent -> {searchRecipe()}
+                    is NextPageEvent -> {nextPage()}
+                }
+            }catch(e: Exception)
+            {
+                Log.d(TAG, "onTriggerEvent: $e , $${e.cause}")
+                e.printStackTrace()
+            }finally {
+                Log.d(TAG, "onTriggerEvent: Event Trigger is done !")
+            }
+        }
+    }
+
+    private suspend fun searchRecipe()
     {
         viewModelScope.launch {
             isLoading.value = true
             resetSearchState()
 
-            delay(1000)
             val result = repository.search(
                 token = token,
                 page = 1,
@@ -51,6 +72,25 @@ class RecipeListViewModel @Inject constructor(
             Log.d("RecipeViewModel", "searchRecipe: $result")
 
             isLoading.value = false
+        }
+    }
+
+    private suspend fun nextPage()
+    {
+        viewModelScope.launch {
+            if((listScrollPosition + 1) >= (FOOD_API_PAGE_SIZE * page.value))
+            {
+                incrementPage()
+                isLoading.value = true
+                val result = repository.search(
+                    token = token,
+                    page = page.value,
+                    query = query.value
+                )
+
+                appendRecipeList(result)
+                isLoading.value = false
+            }
         }
     }
 
@@ -83,26 +123,6 @@ class RecipeListViewModel @Inject constructor(
         val current = ArrayList(this.recipes.value)
         current.addAll(recipes)
         this.recipes.value = current
-    }
-
-    fun nextPage()
-    {
-        viewModelScope.launch {
-            if((listScrollPosition + 1) >= (FOOD_API_PAGE_SIZE * page.value))
-            {
-                incrementPage()
-                isLoading.value = true
-                delay(1000)
-                val result = repository.search(
-                    token = token,
-                    page = page.value,
-                    query = query.value
-                )
-
-                appendRecipeList(result)
-                isLoading.value = false
-            }
-        }
     }
 
     //To implement with jetpack datastore

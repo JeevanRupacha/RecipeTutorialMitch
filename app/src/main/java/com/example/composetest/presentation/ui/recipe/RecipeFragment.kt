@@ -4,42 +4,68 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import com.example.composetest.R
+import androidx.fragment.app.viewModels
+import com.example.composetest.components.CircularIndeterminateProgressBar
+import com.example.composetest.components.recipefragment.RecipeView
+import com.example.composetest.presentation.BaseApplication
+import com.example.composetest.presentation.ui.recipe.RecipeEvent.GetRecipeEvent
+import com.example.composetest.presentation.ui.theme.AppTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RecipeFragment : Fragment() {
 
+    @Inject
+    lateinit var application: BaseApplication
+
+    private val viewModel: RecipeViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.getInt("recipe_id")?.let{ rId ->
+            viewModel.onTriggerEvent(GetRecipeEvent(rId))
+        }
+    }
+
+    @ExperimentalComposeUiApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return ComposeView(requireContext()).apply {
             setContent {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "First Fragment ")
-                    Spacer(modifier = Modifier.padding(bottom = 16.dp))
-                    Button(onClick = {
-                        Toast.makeText(requireContext(), "clicked", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_firstFragment_to_secondFragment)
-                    }) {
-                        Text(
-                            text = "GO NEXT"
-                            )
+
+                AppTheme(
+                    darkTheme = application.isDark.value
+                ) {
+                    val recipe = viewModel.recipe.value
+                    val isLoading = viewModel.isLoading.value
+                    val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+                    Scaffold(
+                        scaffoldState = scaffoldState
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize())
+                        {
+                            recipe?.let{ recipe ->
+                                RecipeView(recipe = recipe)
+                            }
+
+                           CircularIndeterminateProgressBar(display = isLoading, 0.5f)
+                        }
+
+                        }
                     }
                 }
-            }
+
         }
     }
 }

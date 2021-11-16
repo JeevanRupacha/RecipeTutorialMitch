@@ -25,18 +25,26 @@ import androidx.compose.ui.zIndex
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.example.composetest.components.*
 import com.example.composetest.components.util.SnackbarController
+import com.example.composetest.presentation.BaseApplication
+import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NewSearchEvent
+import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NextPageEvent
 import com.example.composetest.presentation.ui.theme.AppTheme
 import com.example.composetest.util.FOOD_API_PAGE_SIZE
 import com.example.composetest.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class RecipeListFragment : Fragment() {
+
+    @Inject
+    lateinit var application: BaseApplication
 
     private val viewModel: RecipeListViewModel by viewModels()
 
@@ -51,7 +59,7 @@ class RecipeListFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
 
-                AppTheme(darkTheme = viewModel.isDarkTheme.value) {
+                AppTheme(darkTheme = application.isDark.value) {
 
                     val recipes = viewModel.recipes.value
                     val query = viewModel.query.value
@@ -66,7 +74,7 @@ class RecipeListFragment : Fragment() {
                                 onQueryChange = viewModel::onQueryChange,
                                 selectedCategory = selectedCategory,
                                 onSelectedCategoryChanged = viewModel::onSelectedCategoryChanged,
-                                onToggleTheme = viewModel::onToggleTheme,
+                                onToggleTheme = application::toggleLightTheme,
                                 searchRecipe = {
                                     if (viewModel.selectedCategory.value?.value == "Milk") {
                                         snackbarController.getScope().launch {
@@ -77,7 +85,7 @@ class RecipeListFragment : Fragment() {
                                             )
                                         }
                                     } else {
-                                        viewModel.searchRecipe()
+                                        viewModel.onTriggerEvent(NewSearchEvent)
                                     }
                                 }
                             )
@@ -86,34 +94,16 @@ class RecipeListFragment : Fragment() {
                         scaffoldState = scaffoldState,
                         snackbarHost = {scaffoldState.snackbarHostState},
                     ) {
-
-                        Box(modifier = Modifier
-                            .background(MaterialTheme.colors.background)
-                            .fillMaxSize())
-                        {
-                            LazyColumn {
-                                itemsIndexed(
-                                    items = recipes
-                                ) { index, recipe ->
-                                    viewModel.onListScrollPositionChange(index)
-                                    if((index + 1) >= (viewModel.page.value * FOOD_API_PAGE_SIZE) && !isLoading)
-                                    {
-                                        viewModel.nextPage()
-                                    }
-                                    RecipeCard(recipe = recipe, onClick = {})
-
-                                    Log.d(TAG, "index : $index")
-                                }
-                            }
-
-                            CircularIndeterminateProgressBar(display = isLoading)
-
-                            DefaultSnackbar(
-                                snackbarHostState = scaffoldState.snackbarHostState,
-                                onDismiss = { scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()},
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
+                        RecipeList(
+                            recipes = recipes,
+                            onListScrollPositionChange = viewModel::onListScrollPositionChange,
+                            isLoading = isLoading,
+                            page = viewModel.page.value,
+                            onTriggerEvent ={viewModel.onTriggerEvent(NextPageEvent)} ,
+                            scaffoldState =scaffoldState,
+                            navController = findNavController(),
+                            snackbarController = snackbarController
+                        )
                     }
                 }
             }

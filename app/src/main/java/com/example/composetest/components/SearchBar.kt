@@ -1,14 +1,18 @@
 package com.example.composetest.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -87,25 +91,20 @@ fun SearchBar(
 
                     IconButton(
                         onClick = onToggleTheme,
-                        modifier = Modifier.constrainAs(menu){
+                        modifier = Modifier
+                            .constrainAs(menu){
                             end.linkTo(parent.end)
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
                         }
                         ) {
-                        Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More vertical button")
+                        Icon(
+                            imageVector = Icons.Rounded.DarkMode,
+                            contentDescription = "Theme Toggle Button",
+                            )
                     }
                 }
 
-//              ConstraintLayout(modifier = Modifier.align(Alignment.CenterVertically))
-//              {
-//                 val (menu) = createRefs()
-//                  IconButton(
-//                      onClick = onToggleTheme
-//                  ) {
-//                        Icon(Icons.Filled.MoreVert)
-//                  }
-//              }
 
             }
 
