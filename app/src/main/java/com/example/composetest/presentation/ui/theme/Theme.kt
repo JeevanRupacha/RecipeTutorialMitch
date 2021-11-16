@@ -5,39 +5,44 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-
-private val DarkColorPalette = darkColors(
-        primary = Purple200,
-        primaryVariant = Purple700,
-        secondary = Teal200
-)
+import androidx.compose.ui.graphics.Color
 
 private val LightColorPalette = lightColors(
-        primary = Purple500,
-        primaryVariant = Purple700,
-        secondary = Teal200
+        primary = Blue600,
+        primaryVariant = Blue400,
+        onPrimary = Black2,
+        secondary = Color.White,
+        secondaryVariant = Teal300,
+        onSecondary = Color.Black,
+        error = RedErrorDark,
+        onError = RedErrorLight,
+        background = Grey1,
+        onBackground = Color.Black,
+        surface = Color.White,
+        onSurface = Color.Black,
+)
 
-        /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
+private val DarkColorPalette = darkColors(
+    primary = Blue700,
+    primaryVariant = Color.White,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    secondary = Black1,
+    onSecondary = Color.White,
+    error = RedErrorLight,
+    background = Color.Black,
+    onBackground = Color.White,
+    surface = Black1,
+    onSurface = Color.White,
 )
 
 @Composable
-fun ComposeTestTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+fun AppTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit) {
 
     MaterialTheme(
-            colors = colors,
-            typography = Typography,
+            colors = if(darkTheme) DarkColorPalette else LightColorPalette,
+            typography = InterTypography,
             shapes = Shapes,
             content = content
     )

@@ -1,3 +1,4 @@
 package com.example.composetest.util
 
-val TAG = "AppDebug"
+const val TAG = "AppDebug"
+const val FOOD_API_PAGE_SIZE = 30

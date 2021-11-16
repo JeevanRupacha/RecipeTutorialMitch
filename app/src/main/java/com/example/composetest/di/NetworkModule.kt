@@ -1,5 +1,7 @@
 package com.example.composetest.di
 
+import android.accounts.NetworkErrorException
+import android.util.Log
 import com.example.composetest.network.model.RecipeDtoMapper
 import com.example.composetest.network.reponses.RecipeService
 import dagger.Module
@@ -25,11 +27,19 @@ object NetworkModule {
     @Provides
     fun provideRecipeService() : RecipeService {
 
-        return Retrofit.Builder()
-            .baseUrl("https://food2fork.ca/api/recipe/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RecipeService::class.java)
+        lateinit var result: RecipeService
+        try{
+          result = Retrofit.Builder()
+              .baseUrl("https://food2fork.ca/api/recipe/")
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(RecipeService::class.java)
+        }catch (error: NetworkErrorException){
+            Log.d("Network error check", "$error")
+        }
+
+        return result
+
     }
 
     @Singleton
