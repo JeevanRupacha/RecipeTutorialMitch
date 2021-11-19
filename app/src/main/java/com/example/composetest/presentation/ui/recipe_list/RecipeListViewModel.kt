@@ -69,8 +69,6 @@ class RecipeListViewModel @Inject constructor(
             )
             recipes.value = result
 
-            Log.d("RecipeViewModel", "searchRecipe: $result")
-
             isLoading.value = false
         }
     }

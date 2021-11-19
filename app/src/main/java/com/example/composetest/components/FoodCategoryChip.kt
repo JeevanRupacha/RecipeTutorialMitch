@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,7 +25,7 @@ fun FoodCategoryChip(
        modifier = Modifier.padding(end = 8.dp),
        elevation = 8.dp,
        color = if(isSelected) MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.primary,
-       shape = MaterialTheme.shapes.medium,
+       shape = CircleShape
    )
    {
        Box(

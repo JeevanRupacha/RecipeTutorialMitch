@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetest.domain.model.Recipe
-import com.example.composetest.presentation.ui.recipe.RecipeEvent.GetRecipeEvent
+import com.example.composetest.presentation.ui.recipe.RecipeDetailEvent.GetRecipeDetailEvent
 import com.example.composetest.repository.RecipeRepository
 import com.example.composetest.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,22 +17,26 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(
+class RecipeDetailViewModel @Inject constructor(
     private val repository: RecipeRepository,
     @Named("auth_token") private val token: String,
 ) : ViewModel()
 {
     val recipe: MutableState<Recipe?> = mutableStateOf(null)
     val isLoading = mutableStateOf(false)
+    val onLoad = mutableStateOf(false)
 
 
-    fun onTriggerEvent(event: RecipeEvent)
+    fun onTriggerEvent(detailEvent: RecipeDetailEvent)
     {
+        Log.d(TAG, "onTriggerEvent1: c")
         viewModelScope.launch {
             try{
-                when(event){
-                    is GetRecipeEvent -> {
-                        getRecipe(event.id)
+                when(detailEvent){
+                    is GetRecipeDetailEvent -> {
+                        if(recipe.value == null){
+                            getRecipe(detailEvent.id)
+                        }
                     }
                 }
 
@@ -53,6 +57,5 @@ class RecipeViewModel @Inject constructor(
         this.recipe.value = result
         isLoading.value = false
     }
-
 
 }

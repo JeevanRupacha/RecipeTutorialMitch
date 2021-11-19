@@ -1,34 +1,65 @@
 package com.example.composetest.presentation
 
 import android.os.Bundle
-import android.util.Log
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.example.composetest.R
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.composetest.components.util.SnackbarController
+import com.example.composetest.presentation.navigation.Screen
+import com.example.composetest.presentation.ui.recipe.RecipeDetailScreen
+import com.example.composetest.presentation.ui.recipe.RecipeDetailViewModel
+import com.example.composetest.presentation.ui.recipe_list.RecipeListScreen
+import com.example.composetest.presentation.ui.recipe_list.RecipeListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(R.layout.main_layout) {
+class MainActivity : AppCompatActivity() {
 
-
+    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+
+            NavHost(navController = navController, startDestination = Screen.RecipeList.route){
+
+                composable(Screen.RecipeList.route){
+
+                    val viewModel = hiltViewModel<RecipeListViewModel>()
+                    val snackbarController: SnackbarController = SnackbarController(lifecycleScope)
+
+                    RecipeListScreen(
+                        viewModel = viewModel,
+                        isDarkTheme = (application as BaseApplication).isDark.value,
+                        onToggleTheme = (application as BaseApplication)::toggleLightTheme ,
+                        snackbarController = snackbarController,
+                        onNavToRecipeDetailScreen = navController::navigate,
+                    )
+                }
+
+                composable(
+                    route = Screen.RecipeDetail.route + "/{userID}",
+                    arguments = listOf(navArgument("userID"){type = NavType.IntType})
+                ){  navBackStackEntry ->
+
+                    val viewModel = hiltViewModel<RecipeDetailViewModel>()
+                    RecipeDetailScreen(
+                        isDarkTheme = (application as BaseApplication).isDark.value,
+                        viewModel = viewModel,
+                        recipeId = navBackStackEntry.arguments?.getInt("userID"),
+                    )
+                }
 
 
-//        val service = Retrofit.Builder()
-//            .baseUrl("https://food2fork.ca/api/recipe/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//            .create(RecipeService::class.java)
-//
-//        CoroutineScope(IO).launch{
-//            val response = service.get(
-//                token = "Token 9c8b06d329136da358c2d00e76946b0111ce2c48",
-//                id = 583
-//            )
-//
-//            Log.d("MainActivity", "response ${response.toString()}")
-//        }
+            }
+        }
 
     }
 }
