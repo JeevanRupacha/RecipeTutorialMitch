@@ -1,4 +1,4 @@
-package com.example.composetest.components
+package com.example.composetest.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import coil.transform.CircleCropTransformation
 import com.example.composetest.R
 import com.example.composetest.domain.model.Recipe
 
@@ -21,6 +20,7 @@ fun RecipeCard(
     recipe: Recipe,
     onClick: () -> Unit
 ) {
+
     Card(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier

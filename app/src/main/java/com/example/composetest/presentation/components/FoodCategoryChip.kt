@@ -1,6 +1,5 @@
-package com.example.composetest.components
+package com.example.composetest.presentation.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable

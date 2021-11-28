@@ -4,11 +4,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import com.example.composetest.components.BottomNav
-import com.example.composetest.components.RecipeList
-import com.example.composetest.components.SearchBar
-import com.example.composetest.components.util.SnackbarController
+import com.example.composetest.presentation.components.*
+import com.example.composetest.presentation.components.util.SnackbarController
 import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NewSearchEvent
+import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NextPageEvent
 import com.example.composetest.presentation.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
@@ -16,6 +15,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecipeListScreen(
     viewModel: RecipeListViewModel,
+    isNetworkAvailable: Boolean,
     isDarkTheme: Boolean,
     onToggleTheme: ()-> Unit,
     snackbarController: SnackbarController,
@@ -26,8 +26,13 @@ fun RecipeListScreen(
     val selectedCategory = viewModel.selectedCategory.value
     val scaffoldState = rememberScaffoldState()
     val isLoading = viewModel.isLoading.value
+    val dialogQueue = viewModel.dialogQueue
 
-    AppTheme(darkTheme = isDarkTheme) {
+    AppTheme(
+        dialogQueue = dialogQueue.queue.value,
+        isNetworkAvailable = isNetworkAvailable,
+        darkTheme = isDarkTheme,
+    ) {
 
         Scaffold(
             topBar = {
@@ -65,16 +70,21 @@ fun RecipeListScreen(
             scaffoldState = scaffoldState,
             snackbarHost = {scaffoldState.snackbarHostState},
         ) {
-            RecipeList(
-                recipes = recipes,
-                onListScrollPositionChange = viewModel::onListScrollPositionChange,
-                isLoading = isLoading,
-                page = viewModel.page.value,
-                onTriggerEvent ={viewModel.onTriggerEvent(RecipeListEvent.NextPageEvent)} ,
-                scaffoldState =scaffoldState,
-                snackbarController = snackbarController,
-                onNavToRecipeDetailScreen = onNavToRecipeDetailScreen,
-            )
+
+            if( recipes.isEmpty() && !isLoading){
+                NothingHere()
+            }else{
+                RecipeList(
+                    recipes = recipes,
+                    onListScrollPositionChange = viewModel::onListScrollPositionChange,
+                    isLoading = isLoading,
+                    page = viewModel.page.value,
+                    onTriggerEvent ={viewModel.onTriggerEvent(NextPageEvent)} ,
+                    scaffoldState =scaffoldState,
+                    snackbarController = snackbarController,
+                    onNavToRecipeDetailScreen = onNavToRecipeDetailScreen,
+                )
+            }
         }
     }
 }

@@ -6,23 +6,27 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import com.example.composetest.components.CircularIndeterminateProgressBar
-import com.example.composetest.components.recipedetailscreen.RecipeView
+import com.example.composetest.presentation.components.CircularIndeterminateProgressBar
+import com.example.composetest.presentation.components.recipedetailscreen.RecipeView
 import com.example.composetest.presentation.ui.theme.AppTheme
 
 @ExperimentalComposeUiApi
 @Composable
 fun RecipeDetailScreen(
     isDarkTheme: Boolean,
+    isNetworkAvailable: Boolean,
     viewModel: RecipeDetailViewModel,
     recipeId: Int?
 )
 {
     if(recipeId == null) return
     val onLoad = viewModel.onLoad.value
+    val dialogQueue = viewModel.dialogQueue
 
     AppTheme(
-        darkTheme = isDarkTheme
+        dialogQueue = dialogQueue.queue.value,
+        darkTheme = isDarkTheme,
+        isNetworkAvailable = isNetworkAvailable,
     ) {
 
         if(!onLoad)

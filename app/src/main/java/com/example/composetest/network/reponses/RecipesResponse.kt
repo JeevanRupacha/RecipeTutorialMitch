@@ -3,7 +3,7 @@ package com.example.composetest.network.reponses
 import com.example.composetest.network.model.RecipeDto
 import com.google.gson.annotations.SerializedName
 
-data class RecipeSearchResponse(
+data class RecipesResponse(
     @SerializedName("count")
     var count: Int ,
 

@@ -6,21 +6,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetest.domain.model.Recipe
+import com.example.composetest.interactors.recipe_list.SearchRecipes
 import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NewSearchEvent
 import com.example.composetest.presentation.ui.recipe_list.RecipeListEvent.NextPageEvent
+import com.example.composetest.presentation.ui.util.DialogQueue
+import com.example.composetest.presentation.util.NetworkConnectionManager
 import com.example.composetest.repository.RecipeRepository
 import com.example.composetest.util.FOOD_API_PAGE_SIZE
 import com.example.composetest.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.Exception
 
 @HiltViewModel
 class RecipeListViewModel @Inject constructor(
-        private val repository: RecipeRepository,
+        private val searchRecipes: SearchRecipes,
+        private val networkConnectionManager: NetworkConnectionManager,
         @Named("auth_token") private val token: String
     ): ViewModel() {
 
@@ -29,10 +36,8 @@ class RecipeListViewModel @Inject constructor(
     val selectedCategory: MutableState<FoodCategory?> = mutableStateOf(null)
     val isLoading = mutableStateOf(false)
     val page = mutableStateOf(1)
+    val dialogQueue = DialogQueue()
     private var listScrollPosition = 0
-
-    //implement with jetpack datastore
-    val isDarkTheme = mutableStateOf(false)
 
     init{ 
         onTriggerEvent(NewSearchEvent)
@@ -56,39 +61,57 @@ class RecipeListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun searchRecipe()
+    private fun searchRecipe()
     {
-        viewModelScope.launch {
-            isLoading.value = true
             resetSearchState()
 
-            val result = repository.search(
+            searchRecipes.execute(
+                query = query.value,
                 token = token,
-                page = 1,
-                query = query.value
-            )
-            recipes.value = result
+                page = page.value,
+                isNetworkAvailable = networkConnectionManager.isInternetAvail.value,
+            ).onEach { dataState ->
 
-            isLoading.value = false
-        }
+                isLoading.value = dataState.loading
+
+                dataState.data?.let { data ->
+                    recipes.value = data
+                }
+
+                dataState.error?.let { error ->
+                    dialogQueue.appendErrorMessage("Error", error)
+                    Log.d(TAG, "searchRecipe 1: $error")
+                }
+
+
+            }.launchIn(viewModelScope)
+
     }
 
-    private suspend fun nextPage()
+    private fun nextPage()
     {
-        viewModelScope.launch {
-            if((listScrollPosition + 1) >= (FOOD_API_PAGE_SIZE * page.value))
-            {
-                incrementPage()
-                isLoading.value = true
-                val result = repository.search(
-                    token = token,
-                    page = page.value,
-                    query = query.value
-                )
 
-                appendRecipeList(result)
-                isLoading.value = false
-            }
+        if((listScrollPosition + 1) >= (FOOD_API_PAGE_SIZE * page.value)) {
+            incrementPage()
+            searchRecipes.execute(
+                query = query.value,
+                token = token,
+                page = page.value,
+                isNetworkAvailable = true,
+            ).onEach { dataState ->
+
+                isLoading.value = dataState.loading
+
+                dataState.data?.let { recipes ->
+                    appendRecipeList(recipes)
+                }
+
+                dataState.error?.let { error ->
+                    dialogQueue.appendErrorMessage("Error", error)
+                }
+
+
+            }.launchIn(viewModelScope)
         }
     }
 
@@ -123,12 +146,6 @@ class RecipeListViewModel @Inject constructor(
         this.recipes.value = current
     }
 
-    //To implement with jetpack datastore
-    fun onToggleTheme()
-    {
-        isDarkTheme.value = !isDarkTheme.value
-    }
-
     fun onQueryChange(query: String ){
         this.query.value = query
     }
@@ -139,7 +156,4 @@ class RecipeListViewModel @Inject constructor(
         selectedCategory.value = newCategory
         onQueryChange(category)
     }
-
-    fun getRepo() = repository
-    fun getToken() = token
 }

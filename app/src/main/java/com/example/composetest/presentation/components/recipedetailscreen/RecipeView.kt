@@ -1,4 +1,4 @@
-package com.example.composetest.components.recipedetailscreen
+package com.example.composetest.presentation.components.recipedetailscreen
 
 import android.util.Log
 import androidx.compose.foundation.Image

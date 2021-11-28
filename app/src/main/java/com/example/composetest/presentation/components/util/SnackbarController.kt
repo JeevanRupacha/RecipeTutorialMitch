@@ -1,4 +1,4 @@
-package com.example.composetest.components.util
+package com.example.composetest.presentation.components.util
 
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration

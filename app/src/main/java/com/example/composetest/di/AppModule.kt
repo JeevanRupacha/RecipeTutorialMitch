@@ -2,6 +2,7 @@ package com.example.composetest.di
 
 import android.content.Context
 import com.example.composetest.presentation.BaseApplication
+import com.example.composetest.presentation.util.NetworkConnectionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,4 +19,6 @@ object AppModule {
     fun provideApplication(@ApplicationContext app: Context): BaseApplication {
         return app as BaseApplication
     }
+
+
 }

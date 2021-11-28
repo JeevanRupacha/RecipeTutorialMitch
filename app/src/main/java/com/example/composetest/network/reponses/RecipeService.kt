@@ -13,7 +13,7 @@ interface RecipeService {
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("query") query: String
-    ): RecipeSearchResponse
+    ): RecipesResponse
 
     @GET("get")
     suspend fun get(

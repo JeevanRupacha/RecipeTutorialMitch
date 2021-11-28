@@ -2,6 +2,7 @@ package com.example.composetest.presentation.ui.recipe_list
 
 enum class FoodCategory(val value: String)
 {
+    ERROR("error"),
     CHICKEN("Chicken"),
     BEEF("Beef"),
     SOUP("Soup"),
@@ -15,6 +16,7 @@ enum class FoodCategory(val value: String)
 
 fun getAllFoodCategory(): List<FoodCategory>{
     return listOf(
+        FoodCategory.ERROR,
         FoodCategory.CHICKEN,
         FoodCategory.BEEF,
         FoodCategory.SOUP,

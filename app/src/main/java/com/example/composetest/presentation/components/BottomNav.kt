@@ -1,4 +1,4 @@
-package com.example.composetest.components
+package com.example.composetest.presentation.components
 
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem

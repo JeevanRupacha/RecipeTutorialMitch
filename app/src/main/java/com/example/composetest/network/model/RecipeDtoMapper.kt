@@ -2,6 +2,7 @@ package com.example.composetest.network.model
 
 import com.example.composetest.domain.model.Recipe
 import com.example.composetest.domain.utils.DomainMapper
+import com.example.composetest.util.DateUtils
 
 class RecipeDtoMapper : DomainMapper<RecipeDto, Recipe> {
     override fun mapToDomainModel(model: RecipeDto): Recipe {
@@ -12,11 +13,9 @@ class RecipeDtoMapper : DomainMapper<RecipeDto, Recipe> {
             featuredImage = model.featuredImage,
             rating = model.rating,
             sourceUrl = model.sourceURl,
-            description = model.description,
-            cookingInstructions = model.cookingInstructions,
             ingredients = model.ingredients?: listOf(),
-            dateAdded = model.dateAdded,
-            dateUpdated = model.dateUpdated
+            dateAdded = DateUtils.longToDate(model.longDateAdded),
+            dateUpdated = DateUtils.longToDate(model.longDateUpdated),
         )
     }
 
@@ -28,11 +27,9 @@ class RecipeDtoMapper : DomainMapper<RecipeDto, Recipe> {
             featuredImage = domainModel.featuredImage,
             rating = domainModel.rating,
             sourceURl = domainModel.sourceUrl,
-            description = domainModel.description,
-            cookingInstructions = domainModel.cookingInstructions,
             ingredients = domainModel.ingredients,
-            dateAdded = domainModel.dateAdded,
-            dateUpdated = domainModel.dateUpdated
+            longDateAdded = DateUtils.dateToLong(domainModel.dateAdded),
+            longDateUpdated = DateUtils.dateToLong(domainModel.dateUpdated),
         )
     }
 

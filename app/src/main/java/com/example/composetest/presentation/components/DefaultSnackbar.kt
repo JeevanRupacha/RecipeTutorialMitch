@@ -1,4 +1,4 @@
-package com.example.composetest.components
+package com.example.composetest.presentation.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*

@@ -6,30 +6,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetest.domain.model.Recipe
+import com.example.composetest.interactors.recipe_details.GetRecipe
 import com.example.composetest.presentation.ui.recipe.RecipeDetailEvent.GetRecipeDetailEvent
+import com.example.composetest.presentation.ui.util.DialogQueue
+import com.example.composetest.presentation.util.NetworkConnectionManager
 import com.example.composetest.repository.RecipeRepository
 import com.example.composetest.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.Exception
 
 @HiltViewModel
 class RecipeDetailViewModel @Inject constructor(
-    private val repository: RecipeRepository,
+    private val getRecipe: GetRecipe,
+    private val networkConnectionManager: NetworkConnectionManager,
     @Named("auth_token") private val token: String,
 ) : ViewModel()
 {
     val recipe: MutableState<Recipe?> = mutableStateOf(null)
     val isLoading = mutableStateOf(false)
     val onLoad = mutableStateOf(false)
+    val dialogQueue = DialogQueue()
 
 
     fun onTriggerEvent(detailEvent: RecipeDetailEvent)
     {
-        Log.d(TAG, "onTriggerEvent1: c")
         viewModelScope.launch {
             try{
                 when(detailEvent){
@@ -50,12 +56,26 @@ class RecipeDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getRecipe(id: Int){
-        isLoading.value = true
-        delay(1000)
-        val result = repository.get(token = token, id = id)
-        this.recipe.value = result
-        isLoading.value = false
+    private fun getRecipe(id: Int){
+
+        getRecipe.execute(
+            isNetworkAvailable = networkConnectionManager.isInternetAvail.value,
+            token = token,
+            recipeId = id
+        ).onEach { dataState ->
+            isLoading.value = dataState.loading
+
+            dataState.data?.let {
+                recipe.value = it
+            }
+
+            dataState.error?.let {
+                dialogQueue.appendErrorMessage("Error", dataState.error)
+                throw Exception("Error ")
+            }
+
+        }.launchIn(viewModelScope)
+
     }
 
 }
