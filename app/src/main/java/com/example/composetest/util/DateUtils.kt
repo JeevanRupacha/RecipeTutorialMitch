@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object DateUtils {
-    val simpleDateFormat = SimpleDateFormat("MMMM d, yyyy")
-    val calendar: Calendar = Calendar.getInstance()
+    private val simpleDateFormat = SimpleDateFormat("MMMM d, yyyy")
+    //val calendar: Calendar = Calendar.getInstance()
 
     fun longToDate(longVal: Long): Date
     {
